@@ -8,6 +8,38 @@ if(NOT CMAKE_PREFIX_PATH)
   string(REPLACE ":" ";" CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
 endif()
 
+set(filename pthreads-w32-2-9-1-release.tar.gz)
+if(NOT EXISTS src)
+  message("Downlading pthreads...")
+  file(DOWNLOAD
+    https://mirrors.kernel.org/sourceware/pthreads-win32/${filename}
+    ${filename}
+    SHOW_PROGRESS
+    )
+  message("Extracting...")
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E tar "xf" ${filename} -- *.c *.h
+    )
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E rm ${filename}
+    )
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E rename pthreads-w32-2-9-1-release src
+    )
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E make_directory include
+    )
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E rename src/pthread.h include/pthread.h
+    )
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E rename src/sched.h include/sched.h
+    )
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E rename src/semaphore.h include/semaphore.h
+    )
+endif()
+
 project(pthread C)
 
 add_compile_definitions(
@@ -20,26 +52,26 @@ if(NOT MSVC)
 endif()
 
 set(SRC
-  attr.c
-  barrier.c
-  cancel.c
-  cleanup.c
-  condvar.c
-  create.c
-  dll.c
-  exit.c
-  fork.c
-  global.c
-  misc.c
-  mutex.c
-  private.c
-  rwlock.c
-  sched.c
-  semaphore.c
-  spin.c
-  sync.c
-  tsd.c
-  nonportable.c
+  src/attr.c
+  src/barrier.c
+  src/cancel.c
+  src/cleanup.c
+  src/condvar.c
+  src/create.c
+  src/dll.c
+  src/exit.c
+  src/fork.c
+  src/global.c
+  src/misc.c
+  src/mutex.c
+  src/private.c
+  src/rwlock.c
+  src/sched.c
+  src/semaphore.c
+  src/spin.c
+  src/sync.c
+  src/tsd.c
+  src/nonportable.c
   )
 
 add_library(${PROJECT_NAME} ${SRC})
@@ -55,7 +87,7 @@ endif()
 message("Install prefix: " ${CMAKE_INSTALL_PREFIX})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/.>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
     PRIVATE .)
 target_compile_definitions(${PROJECT_NAME} INTERFACE
@@ -67,7 +99,7 @@ install(
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
   )
-install(FILES pthread.h sched.h semaphore.h DESTINATION include)
+install(DIRECTORY include/ DESTINATION include)
 install(EXPORT ${PROJECT_NAME}Config DESTINATION lib/cmake/${PROJECT_NAME})
 export(TARGETS ${PROJECT_NAME} FILE ${PROJECT_NAME}Config.cmake)
 ################################################################################
