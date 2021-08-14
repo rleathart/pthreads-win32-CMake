@@ -18,7 +18,7 @@ if(NOT EXISTS src)
     )
   message("Extracting...")
   execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar "xf" ${filename} -- *.c *.h
+    COMMAND ${CMAKE_COMMAND} -E tar "xf" ${filename} -- *.c *.h *COPYING*
     )
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E rm ${filename}
