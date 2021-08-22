@@ -9,34 +9,41 @@ if(NOT CMAKE_PREFIX_PATH)
 endif()
 
 set(filename pthreads-w32-2-9-1-release.tar.gz)
-if(NOT EXISTS src)
+if(NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/src)
   message("Downlading pthreads...")
   file(DOWNLOAD
     https://mirrors.kernel.org/sourceware/pthreads-win32/${filename}
-    ${filename}
+    ${CMAKE_CURRENT_LIST_DIR}/${filename}
     SHOW_PROGRESS
     )
   message("Extracting...")
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E tar "xf" ${filename} -- *.c *.h *COPYING*
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E rm ${filename}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E rename pthreads-w32-2-9-1-release src
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E make_directory include
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E rename src/pthread.h include/pthread.h
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E rename src/sched.h include/sched.h
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E rename src/semaphore.h include/semaphore.h
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     )
 endif()
 
