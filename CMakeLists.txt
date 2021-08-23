@@ -82,6 +82,11 @@ set(SRC
   )
 
 add_library(${PROJECT_NAME} ${SRC})
+if(NOT BUILD_SHARED_LIBS)
+  target_compile_definitions(${PROJECT_NAME}
+    PUBLIC PTW32_STATIC_LIB
+    )
+endif()
 
 ################################################################################
 #                         INSTALLATION
